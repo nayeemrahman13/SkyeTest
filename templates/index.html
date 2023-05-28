@@ -13,13 +13,18 @@
           <a href="/" class="nav-link">Home</a>
           <a href="/listings" class="nav-link">Trips</a>
           <a href="/bookings" class="nav-link">Settings</a>
+          {% if username %}
+            Welcome, {{ username }}
+          {% else %}
+            <button onclick="LoginWithReplit()"> Login with Replit</button>
+          {% endif %}
         </nav>
       </div>
     </header>
     <h1 class = "landing">
       Skye
     </h1>
-    <button onclick="LoginWithReplit()"> Login with Replit</button>
+
   </body>
   
 </html>
