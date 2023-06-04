@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Trip Details</h1>
+
+  <p>Trip Date: {{ trip_data.date }}</p>
+  <p>Trip Location: {{ trip_data.location }}</p>
+  <p>Trip Members:</p>
+  <ul>
+    {% for member in trip_data.members %}
+      <li>{{ member }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Activity Voting</h2>
+  {% for activity in trip_data.activities %}
+    <h3>{{ activity.name }}</h3>
+    {% if activity.in_progress %}
+      <p>Voting in progress</p>
+      <ul>
+        {% for vote in activity.votes %}
+          <li>{{ vote }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Voting has not yet started</p>
+      <button onclick="startActivityVote({{ activity.id }})">Start voting</button>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
