@@ -1,7 +1,13 @@
 from flask import Flask, render_template, redirect, session, request
-from replit import db
+from database import get_db
 
+def create_tables():
+  with get_db() as db:
+    db.execute(open("schema.sql").read())
+    
 app = Flask(__name__, static_url_path='/static')
+create_tables()
+
 
 
 @app.route('/')
@@ -12,7 +18,11 @@ def index():
 @app.route('/trip/<trip_id>')
 def trip_details(trip_id):
   # Fetch the trip information from the database based on the trip ID
-  trip_data = db[trip_id]
+  db = get_db()
+  trip_data = db.execute(
+    'SELECT * FROM trips WHERE id = ?', (trip_id,)
+  ).fetchone()
+  db.close()
 
   # Render the trip details template with the trip information
   return render_template('trip_details.html', trip_data=trip_data)
