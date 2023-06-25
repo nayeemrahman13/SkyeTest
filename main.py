@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, session, request
 import os
 from supabase import create_client, Client
 from database import get_db
-from twilio.rest import client
+from twilio.rest import Client
 
 
 supabase_url = os.getenv("supabase_url")
@@ -11,9 +11,20 @@ supabase = create_client(supabase_url, supabase_key)
 
 twilio_sid = os.gentenv("twilio_sid")
 twilio_auth_token = os.getenv("twilio_test_auth_token")
+twilio_client = Client(twilio_sid, twilio_auth_token)
+
+twilio_phone_number = os.getenv("twilio_phone_number")
+my_phone = os.getenv("my_phone")
 
 app = Flask(__name__, static_url_path='/static')
 
+def send_message():
+  message = twilio_client.messages.create(
+    body='Hello, this is a test message from my Flask app!',
+    from_=twilio_phone_number,
+    to=my_phone
+)
+  return message
 
 
 @app.route('/')
