@@ -9,7 +9,7 @@ supabase_url = os.getenv("supabase_url")
 supabase_key = os.getenv("supabase_key")
 supabase = create_client(supabase_url, supabase_key)
 
-twilio_sid = os.gentenv("twilio_sid")
+twilio_sid = os.getenv("twilio_sid")
 twilio_auth_token = os.getenv("twilio_test_auth_token")
 twilio_client = Client(twilio_sid, twilio_auth_token)
 
@@ -25,6 +25,7 @@ def send_message():
     to=my_phone
 )
   return message
+
 
 
 @app.route('/')
@@ -48,6 +49,29 @@ def trip_details(trip_id):
 def plan():
   
   return render_template('plan.html')
+
+@app.route('/invite', methods=['GET', 'POST'])
+def invite():
+    if request.method == 'POST':
+        # Get the form data submitted by the user
+        friend_name = request.form['friend_name']
+        friend_phone = request.form['friend_phone']
+        
+        # Perform any necessary validation on the form data
+        
+        # Send the invitation text message
+        message_body = f"Hi {friend_name}, you've been invited to join this trip. How many days would you like to stay?"
+        message = twilio_client.messages.create(
+            body=message_body,
+            from_=twilio_phone_number,
+            to=friend_phone
+        )
+        
+        # Redirect the user to a confirmation page
+        return render_template('invitation_sent.html', friend_name=friend_name)
+    
+    # Render the invite.html template for GET requests
+    return render_template('invite.html')
 
 app.run(host='0.0.0.0', port=81)
 
