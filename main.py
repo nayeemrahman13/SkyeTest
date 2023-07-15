@@ -3,6 +3,8 @@ import os
 from supabase import create_client, Client
 from database import get_db
 from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
+
 
 
 supabase_url = os.getenv("supabase_url")
@@ -10,7 +12,7 @@ supabase_key = os.getenv("supabase_key")
 supabase = create_client(supabase_url, supabase_key)
 
 twilio_sid = os.getenv("twilio_sid")
-twilio_auth_token = os.getenv("twilio_test_auth_token")
+twilio_auth_token = os.getenv("twilio_auth_token")
 twilio_client = Client(twilio_sid, twilio_auth_token)
 
 twilio_phone_number = os.getenv("twilio_phone_number")
@@ -26,7 +28,29 @@ def send_message():
 )
   return message
 
+def process_sms(message_body, from_number):
+    # Store the message in Supabase database
+    supabase.table("messages").insert(
+        [{"message": message_body, "from_number": from_number}]
+    ).execute()
+    # Return a response message
+    response = "Your message has been stored in the database."
+    return response
 
+@app.route("/sms", methods=['POST'])
+def receive_sms():
+    # Fetch the message body and phone number from the request
+    message_body = request.form['Body']
+    from_number = request.form['From']
+
+    # Process the message and generate a response
+    response = process_sms(message_body, from_number)
+
+    # Create a TwiML response
+    twiml_response = MessagingResponse()
+    twiml_response.message(response)
+
+    return str(twiml_response)
 
 @app.route('/')
 def index():
