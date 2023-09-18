@@ -5,8 +5,6 @@ from database import get_db
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
-
-
 supabase_url = os.getenv("supabase_url")
 supabase_key = os.getenv("supabase_key")
 supabase = create_client(supabase_url, supabase_key)
@@ -73,6 +71,21 @@ def trip_details(trip_id):
 def plan():
   
   return render_template('plan.html')
+  
+@app.route('/create_trip', methods =[ 'POST', 'GET'])
+def create_trip():
+  if request.method == 'POST':
+    # Fetch the form data from the request
+    destination = request.form["destination"]
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
+  return render_template('plan.html')
+
+@app.route('/trips')
+def trips():
+    # Get trips from the database and pass to the template
+    #trips = get_all_trips()
+    return render_template('trips.html')#, trips=trips)
 
 @app.route('/invite', methods=['GET', 'POST'])
 def invite():
